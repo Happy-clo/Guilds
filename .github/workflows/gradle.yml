@@ -3,11 +3,9 @@ name: Java CI with Gradle
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -25,3 +23,8 @@ jobs:
       uses: gradle/actions/setup-gradle@v3-beta
     - name: Build with Gradle
       run: ./gradlew build
+    - name: upload Spigot Plugin
+      uses: actions/upload-artifact@v3
+      with:
+         name: Guilds
+         path: build/libs
