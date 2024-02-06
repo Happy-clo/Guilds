@@ -11,18 +11,37 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 18
-      uses: actions/setup-java@v4
-      with:
-        java-version: '18'
-        distribution: 'temurin'
-    - name: Build with Gradle
-      uses: gradle/actions/setup-gradle@v3-beta
-    - name: Build with Gradle
-      run: ./gradlew build
-    - name: upload Spigot Plugin
-      uses: actions/upload-artifact@v3
-      with:
-         name: Guilds
-         path: build/libs
+      - uses: actions/checkout@v4
+      - name: Set up JDK 18
+        uses: actions/setup-java@v4
+        with:
+          java-version: '18'
+          distribution: 'temurin'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3-beta
+      - name: Build with Gradle
+        run: ./gradlew build
+      - name: Upload Spigot Plugin Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Guilds
+          path: build/libs/*.jar
+          
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: Guilds
+          path: build/libs
+      - name: Create Release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: "latest"
+          prerelease: false
+          title: "Guilds 自动构建最新版本"
+          files: |
+            build/libs/*.jar
